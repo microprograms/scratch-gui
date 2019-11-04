@@ -342,6 +342,7 @@ class MenuBar extends React.Component {
                                         description="Text for file dropdown menu"
                                         id="gui.menuBar.file"
                                     />
+                                    <span>&nbsp;&nbsp;&nbsp;▾</span>
                                 </span>
                                 <MenuBarMenu
                                     className={classNames(styles.menuBarMenu)}
