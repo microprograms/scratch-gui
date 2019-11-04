@@ -3,6 +3,7 @@ import React from 'react';
 
 import styles from '../components/menu-bar/menu-bar.css';
 import redoIcon from '../components/menu-bar/redo.svg';
+import classNames from 'classnames';
 
 class FlyingbearsRedo extends React.Component {
     constructor (props) {
@@ -14,7 +15,7 @@ class FlyingbearsRedo extends React.Component {
     }
     render () {
         return (
-            <div onClick={this.handleChange} >
+            <div onClick={this.handleChange} className={classNames(styles.menuBarItem, styles.hoverable)} >
                 <img className={styles.icon} src={redoIcon} />
                 <span className={styles.desc}>重做</span>
             </div>

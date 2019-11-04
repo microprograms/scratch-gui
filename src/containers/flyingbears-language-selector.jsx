@@ -6,6 +6,7 @@ import {selectLocale} from '../reducers/locales';
 import styles from '../components/menu-bar/menu-bar.css';
 import languageIconEn from '../components/language-selector/en.svg';
 import languageIconZhCn from '../components/language-selector/zh-cn.svg';
+import classNames from 'classnames';
 
 class FlyingbearsLanguageSelector extends React.Component {
     constructor (props) {
@@ -22,22 +23,22 @@ class FlyingbearsLanguageSelector extends React.Component {
         const {
             currentLocale
         } = this.props;
-        return (
-            <div>
-                {(currentLocale == 'zh-cn') && (
-                    <div onClick={this.handleChangeLocale.bind(this, 'en')} >
-                        <img className={styles.languageIcon} src={languageIconEn} />
-                        <span className={styles.languageDesc}>英文</span>
-                    </div>
-                )}
-                {(currentLocale == 'en') && (
-                    <div onClick={this.handleChangeLocale.bind(this, 'zh-cn')} >
-                        <img className={styles.languageIcon} src={languageIconZhCn} />
-                        <span className={styles.languageDesc}>Chinese</span>
-                    </div>
-                )}
-            </div>
-        );
+        if (currentLocale == 'zh-cn') {
+            return (
+                <div onClick={this.handleChangeLocale.bind(this, 'en')} className={classNames(styles.menuBarItem, styles.hoverable, styles.languageMenu)}>
+                    <img className={styles.icon} src={languageIconEn} />
+                    <span className={styles.desc}>英文</span>
+                </div>
+            );
+        }
+        if (currentLocale == 'en') {
+            return (
+                <div onClick={this.handleChangeLocale.bind(this, 'zh-cn')} className={classNames(styles.menuBarItem, styles.hoverable, styles.languageMenu)}>
+                    <img className={styles.icon} src={languageIconZhCn} />
+                    <span className={styles.desc}>Chinese</span>
+                </div>
+            );
+        }
     }
 }
 
