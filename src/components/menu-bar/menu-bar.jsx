@@ -63,6 +63,10 @@ import scratchLogo from './scratch-logo.svg';
 
 import sharedMessages from '../../lib/shared-messages';
 
+import fileManagerSaveIcon from './file-manager-save.svg';
+import fileManagerDownloadIcon from './file-manager-download.svg';
+import fileManagerOpenIcon from './file-manager-open.svg';
+
 const ariaMessages = defineMessages({
     language: {
         id: 'gui.menuBar.LanguageSelector',
@@ -331,11 +335,14 @@ class MenuBar extends React.Component {
                                 })}
                                 onMouseUp={this.props.onClickFile}
                             >
-                                <FormattedMessage
-                                    defaultMessage="File"
-                                    description="Text for file dropdown menu"
-                                    id="gui.menuBar.file"
-                                />
+                                <img className={styles.icon} src={fileManagerSaveIcon} />
+                                <span className={styles.desc}>
+                                    <FormattedMessage
+                                        defaultMessage="File"
+                                        description="Text for file dropdown menu"
+                                        id="gui.menuBar.file"
+                                    />
+                                </span>
                                 <MenuBarMenu
                                     className={classNames(styles.menuBarMenu)}
                                     open={this.props.fileMenuOpen}
@@ -343,33 +350,21 @@ class MenuBar extends React.Component {
                                     onRequestClose={this.props.onRequestCloseFile}
                                 >
                                     <MenuSection>
-                                        <MenuItem
-                                            isRtl={this.props.isRtl}
-                                            onClick={this.handleClickNew}
-                                        >
-                                            {newProjectMessage}
-                                        </MenuItem>
-                                    </MenuSection>
-                                    {(this.props.canSave || this.props.canCreateCopy || this.props.canRemix) && (
-                                        <MenuSection>
-                                            {this.props.canSave && (
-                                                <MenuItem onClick={this.handleClickSave}>
-                                                    {saveNowMessage}
-                                                </MenuItem>
-                                            )}
-                                            {this.props.canCreateCopy && (
-                                                <MenuItem onClick={this.handleClickSaveAsCopy}>
-                                                    {createCopyMessage}
-                                                </MenuItem>
-                                            )}
-                                            {this.props.canRemix && (
-                                                <MenuItem onClick={this.handleClickRemix}>
-                                                    {remixMessage}
-                                                </MenuItem>
-                                            )}
-                                        </MenuSection>
-                                    )}
-                                    <MenuSection>
+                                        <SB3Downloader>{(className, downloadProjectCallback) => (
+                                            <MenuItem
+                                                className={className}
+                                                onClick={this.getSaveToComputerHandler(downloadProjectCallback)}
+                                            >
+                                                <img className={styles.icon} src={fileManagerDownloadIcon} />
+                                                <span className={styles.desc}>
+                                                    <FormattedMessage
+                                                        defaultMessage="Save to your computer"
+                                                        description="Menu bar item for downloading a project to your computer" // eslint-disable-line max-len
+                                                        id="gui.menuBar.downloadToComputer"
+                                                    />
+                                                </span>
+                                            </MenuItem>
+                                        )}</SB3Downloader>
                                         <SBFileUploader
                                             canSave={this.props.canSave}
                                             userOwnsProject={this.props.userOwnsProject}
@@ -379,25 +374,18 @@ class MenuBar extends React.Component {
                                                     className={className}
                                                     onClick={handleLoadProject}
                                                 >
-                                                    {/* eslint-disable max-len */}
-                                                    {this.props.intl.formatMessage(sharedMessages.loadFromComputerTitle)}
-                                                    {/* eslint-enable max-len */}
+                                                    <img className={styles.icon} src={fileManagerOpenIcon} />
+                                                    <span className={styles.desc}>
+                                                        <FormattedMessage
+                                                            defaultMessage="Load from your computer"
+                                                            description="Title for uploading a project from your computer" // eslint-disable-line max-len
+                                                            id="gui.sharedMessages.loadFromComputerTitle"
+                                                        />
+                                                    </span>
                                                     {renderFileInput()}
                                                 </MenuItem>
                                             )}
                                         </SBFileUploader>
-                                        <SB3Downloader>{(className, downloadProjectCallback) => (
-                                            <MenuItem
-                                                className={className}
-                                                onClick={this.getSaveToComputerHandler(downloadProjectCallback)}
-                                            >
-                                                <FormattedMessage
-                                                    defaultMessage="Save to your computer"
-                                                    description="Menu bar item for downloading a project to your computer" // eslint-disable-line max-len
-                                                    id="gui.menuBar.downloadToComputer"
-                                                />
-                                            </MenuItem>
-                                        )}</SB3Downloader>
                                     </MenuSection>
                                 </MenuBarMenu>
                             </div>
