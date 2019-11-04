@@ -54,6 +54,10 @@
     vertical-align: middle;
 }
 
+.language-desc {
+    padding-left: 1rem;
+}
+
 .language-caret {
     margin: 0 .125rem;
 }
