@@ -16,6 +16,7 @@ import ShareButton from './share-button.jsx';
 import {ComingSoonTooltip} from '../coming-soon/coming-soon.jsx';
 import Divider from '../divider/divider.jsx';
 import FlyingbearsLanguageSelector from '../../containers/flyingbears-language-selector.jsx';
+import FlyingbearsRedo from '../../containers/flyingbears-redo.jsx';
 import SaveStatus from './save-status.jsx';
 import SBFileUploader from '../../containers/sb-file-uploader.jsx';
 import ProjectWatcher from '../../containers/project-watcher.jsx';
@@ -336,6 +337,11 @@ class MenuBar extends React.Component {
                         >
                             <FlyingbearsLanguageSelector label={this.props.intl.formatMessage(ariaMessages.language)} />
                         </div>)}
+                        <div
+                            className={classNames(styles.menuBarItem, styles.hoverable)}
+                        >
+                            <FlyingbearsRedo currentHomeworkId='placeholder' />
+                        </div>
                         {(this.props.canManageFiles) && (
                             <div
                                 className={classNames(styles.menuBarItem, styles.hoverable, {

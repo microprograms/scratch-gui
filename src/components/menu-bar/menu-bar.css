@@ -58,6 +58,15 @@
     padding-left: 1rem;
 }
 
+.icon {
+    height:  1.5rem;
+    vertical-align: middle;
+}
+
+.desc {
+    padding-left: 1rem;
+}
+
 .language-caret {
     margin: 0 .125rem;
 }
