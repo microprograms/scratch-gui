@@ -424,54 +424,6 @@ class MenuBar extends React.Component {
                                 </MenuBarMenu>
                             </div>
                         )}
-                        <div
-                            className={classNames(styles.menuBarItem, styles.hoverable, {
-                                [styles.active]: this.props.editMenuOpen
-                            })}
-                            onMouseUp={this.props.onClickEdit}
-                        >
-                            <div className={classNames(styles.editMenu)}>
-                                <FormattedMessage
-                                    defaultMessage="Edit"
-                                    description="Text for edit dropdown menu"
-                                    id="gui.menuBar.edit"
-                                />
-                            </div>
-                            <MenuBarMenu
-                                className={classNames(styles.menuBarMenu)}
-                                open={this.props.editMenuOpen}
-                                place={this.props.isRtl ? 'left' : 'right'}
-                                onRequestClose={this.props.onRequestCloseEdit}
-                            >
-                                <DeletionRestorer>{(handleRestore, {restorable, deletedItem}) => (
-                                    <MenuItem
-                                        className={classNames({[styles.disabled]: !restorable})}
-                                        onClick={this.handleRestoreOption(handleRestore)}
-                                    >
-                                        {this.restoreOptionMessage(deletedItem)}
-                                    </MenuItem>
-                                )}</DeletionRestorer>
-                                <MenuSection>
-                                    <TurboMode>{(toggleTurboMode, {turboMode}) => (
-                                        <MenuItem onClick={toggleTurboMode}>
-                                            {turboMode ? (
-                                                <FormattedMessage
-                                                    defaultMessage="Turn off Turbo Mode"
-                                                    description="Menu bar item for turning off turbo mode"
-                                                    id="gui.menuBar.turboModeOff"
-                                                />
-                                            ) : (
-                                                <FormattedMessage
-                                                    defaultMessage="Turn on Turbo Mode"
-                                                    description="Menu bar item for turning on turbo mode"
-                                                    id="gui.menuBar.turboModeOn"
-                                                />
-                                            )}
-                                        </MenuItem>
-                                    )}</TurboMode>
-                                </MenuSection>
-                            </MenuBarMenu>
-                        </div>
                     </div>
                     <Divider className={classNames(styles.divider)} />
                     <div
