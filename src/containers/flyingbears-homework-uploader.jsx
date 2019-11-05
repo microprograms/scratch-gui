@@ -24,7 +24,7 @@ class FlyingbearsHomeworkUploader extends React.Component {
                     const filename = getFilename();
                     // eslint-disable-next-line max-len
                     const finalFilename = getFileNameWithoutSuffix(filename) + '-' + name.replace(/ /g, '') + getFileSuffix(filename);
-                    uploadBlobToAliyunOss(filename, content, this.props.onUploadFinished);
+                    uploadBlobToAliyunOss(finalFilename, content, this.props.onUploadFinished);
                 }
             });
         });
