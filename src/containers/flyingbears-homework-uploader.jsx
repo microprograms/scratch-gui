@@ -15,14 +15,13 @@ class FlyingbearsHomeworkUploader extends React.Component {
     }
     uploadHomework () {
         this.props.saveProjectSb3().then(content => {
-            const label = '输入你的名字：';
+            const label = '输入你的姓名：';
             swal(label, {
                 content: 'input',
             }).then((name) => {
-                name = name.replace(/ /g, '');
-                if (name) {
+                if (name && name.replace(/ /g, '').length > 0) {
                     const projectFilename = this.props.projectFilename;
-                    const filename = getFileNameWithoutSuffix(projectFilename) + name + getFileSuffix(projectFilename);
+                    const filename = getFileNameWithoutSuffix(projectFilename) + name.replace(/ /g, '') + getFileSuffix(projectFilename);
                     uploadBlobToAliyunOss(filename, content, this.props.onUploadFinished);
                 }
             });
