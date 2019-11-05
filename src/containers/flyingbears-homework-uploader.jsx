@@ -5,6 +5,7 @@ import {connect} from 'react-redux';
 import {projectTitleInitialState} from '../reducers/project-title';
 import uploadBlobToAliyunOss from '../lib/flyingbears-aliyun-oss-uploader.js';
 import swal from 'sweetalert';
+import {fn_url_args} from '../lib/flyingbears-fn';
 
 class FlyingbearsHomeworkUploader extends React.Component {
     constructor (props) {
@@ -20,8 +21,9 @@ class FlyingbearsHomeworkUploader extends React.Component {
                 content: 'input',
             }).then((name) => {
                 if (name && name.replace(/ /g, '').length > 0) {
-                    const projectFilename = this.props.projectFilename;
-                    const filename = getFileNameWithoutSuffix(projectFilename) + '-' + name.replace(/ /g, '') + getFileSuffix(projectFilename);
+                    const filename = getFilename();
+                    // eslint-disable-next-line max-len
+                    const finalFilename = getFileNameWithoutSuffix(filename) + '-' + name.replace(/ /g, '') + getFileSuffix(filename);
                     uploadBlobToAliyunOss(filename, content, this.props.onUploadFinished);
                 }
             });
@@ -44,6 +46,15 @@ const getProjectFilename = (curTitle, defaultTitle) => {
         filenameTitle = defaultTitle;
     }
     return `${filenameTitle.substring(0, 100)}.sb3`;
+};
+
+const getFilename = () => {
+    const urlArgs = fn_url_args();
+    const lessonId = urlArgs['lessonId'];
+    if (lessonId) {
+        return lessonId.substring(lessonId.lastIndexOf('/') + 1);
+    }
+    return this.props.projectFilename;
 };
 
 const getFileSuffix = (filename) => {
