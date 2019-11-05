@@ -252,7 +252,7 @@ class MenuBar extends React.Component {
     autoLoadLesson () {
         const urlArgs = fn_url_args();
         const lessonId = urlArgs['lessonId'];
-        const downloadUrl = 'http://127.0.0.1:9702/download?objectName=' + lessonId;
+        const downloadUrl = 'http://47.105.83.254:9702/download?objectName=' + lessonId;
         const xhr = new XMLHttpRequest();
         xhr.open('GET', downloadUrl);
         xhr.responseType = 'blob';
