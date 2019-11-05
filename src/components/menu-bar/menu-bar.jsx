@@ -23,6 +23,7 @@ import ProjectTitleInput from './project-title-input.jsx';
 import AuthorInfo from './author-info.jsx';
 import SB3Downloader from '../../containers/sb3-downloader.jsx';
 import FlyingbearsHomeworkUploader from '../../containers/flyingbears-homework-uploader.jsx';
+import {fn_url_args} from '../../lib/flyingbears-fn';
 import MenuBarHOC from '../../containers/menu-bar-hoc.jsx';
 
 import {openTipsLibrary} from '../../reducers/modals';
@@ -158,6 +159,7 @@ class MenuBar extends React.Component {
     }
     componentDidMount () {
         document.addEventListener('keydown', this.handleKeyPress);
+        this.autoLoadLesson();
     }
     componentWillUnmount () {
         document.removeEventListener('keydown', this.handleKeyPress);
@@ -246,6 +248,33 @@ class MenuBar extends React.Component {
         this.setState({
             'isFlyingbearsHomeworkSubmited': true
         });
+    }
+    autoLoadLesson () {
+        const urlArgs = fn_url_args();
+        const lessonId = urlArgs['lessonId'];
+        const downloadUrl = 'http://127.0.0.1:9702/download?objectName=' + lessonId;
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', downloadUrl);
+        xhr.responseType = 'blob';
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState == 4) {
+                const blob = new Blob([xhr.response]);
+                const filename = lessonId.substring(lessonId.lastIndexOf('/') + 1);
+                const reader = new FileReader();
+                reader.readAsArrayBuffer(blob);
+                reader.onload = () => {
+                    this.props.vm.loadProject(reader.result)
+                        .then(() => {
+                            // alert('done');
+                        })
+                        .catch(error => {
+                            log.warn(error);
+                            alert(this.props.intl.formatMessage(messages.loadError)); // eslint-disable-line no-alert
+                        });
+                };
+            }
+        };
+        xhr.send();
     }
     handleLanguageMouseUp (e) {
         if (!this.props.languageMenuOpen) {
