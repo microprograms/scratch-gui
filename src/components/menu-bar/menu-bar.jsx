@@ -252,6 +252,9 @@ class MenuBar extends React.Component {
     autoLoadLesson () {
         const urlArgs = fn_url_args();
         const lessonId = urlArgs['lessonId'];
+        if (!lessonId) {
+            return;
+        }
         const downloadUrl = 'http://47.105.83.254:9702/download?objectName=' + lessonId;
         const xhr = new XMLHttpRequest();
         xhr.open('GET', downloadUrl);
@@ -268,7 +271,13 @@ class MenuBar extends React.Component {
                             // alert('done');
                         })
                         .catch(error => {
-                            log.warn(error);
+                            const messages = defineMessages({
+                                loadError: {
+                                    id: 'gui.projectLoader.loadError',
+                                    defaultMessage: 'The project file that was selected failed to load.',
+                                    description: 'An error that displays when a local project file fails to load.'
+                                }
+                            });
                             alert(this.props.intl.formatMessage(messages.loadError)); // eslint-disable-line no-alert
                         });
                 };
