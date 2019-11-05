@@ -16,7 +16,7 @@ const upload = (filename, blob, uploadFinishedCallback) => {
 
         const formData = new FormData();
         formData.append('name', filename);
-        formData.append('key', signatureObject['dir'] + '${filename}');
+        formData.append('key', signatureObject['dir'] + filename);
         formData.append('policy', signatureObject['policy']);
         formData.append('OSSAccessKeyId', signatureObject['accessid']);
         formData.append('success_action_status', '200');

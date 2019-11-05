@@ -4,6 +4,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {projectTitleInitialState} from '../reducers/project-title';
 import uploadBlobToAliyunOss from '../lib/flyingbears-aliyun-oss-uploader.js';
+import swal from 'sweetalert';
 
 class FlyingbearsHomeworkUploader extends React.Component {
     constructor (props) {
@@ -14,7 +15,17 @@ class FlyingbearsHomeworkUploader extends React.Component {
     }
     uploadHomework () {
         this.props.saveProjectSb3().then(content => {
-            uploadBlobToAliyunOss(this.props.projectFilename, content, this.props.onUploadFinished);
+            const label = '输入你的名字：';
+            swal(label, {
+                content: 'input',
+            }).then((name) => {
+                name = name.replace(/ /g, '');
+                if (name) {
+                    const projectFilename = this.props.projectFilename;
+                    const filename = getFileNameWithoutSuffix(projectFilename) + name + getFileSuffix(projectFilename);
+                    uploadBlobToAliyunOss(filename, content, this.props.onUploadFinished);
+                }
+            });
         });
     }
     render () {
@@ -34,6 +45,22 @@ const getProjectFilename = (curTitle, defaultTitle) => {
         filenameTitle = defaultTitle;
     }
     return `${filenameTitle.substring(0, 100)}.sb3`;
+};
+
+const getFileSuffix = (filename) => {
+    const index = filename.lastIndexOf('.');
+    if (index == -1) {
+        return '';
+    }
+    return filename.substring(index);
+};
+
+const getFileNameWithoutSuffix = (filename) => {
+    const index = filename.lastIndexOf('.');
+    if (index == -1) {
+        return filename;
+    }
+    return filename.substring(0, index);
 };
 
 FlyingbearsHomeworkUploader.propTypes = {
