@@ -13,6 +13,6 @@
 }
 
 .submit-homework-button-is-submited {
-    background: $ui-black-transparent;
-    cursor: default;
+    background-color:hsla(215, 100%, 65%, 1);
+    pointer-events: none;
 }

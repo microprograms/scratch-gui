@@ -86,6 +86,7 @@ const GUIComponent = props => {
         isPlayerOnly,
         isRtl,
         isShared,
+        isFlyingbearsHomeworkSubmited,
         loading,
         logo,
         renderLogin,
@@ -215,6 +216,7 @@ const GUIComponent = props => {
                     className={styles.menuBarPosition}
                     enableCommunity={enableCommunity}
                     isShared={isShared}
+                    isFlyingbearsHomeworkSubmited={isFlyingbearsHomeworkSubmited}
                     logo={logo}
                     renderLogin={renderLogin}
                     showComingSoon={showComingSoon}
@@ -383,6 +385,7 @@ GUIComponent.propTypes = {
     isPlayerOnly: PropTypes.bool,
     isRtl: PropTypes.bool,
     isShared: PropTypes.bool,
+    isFlyingbearsHomeworkSubmited: PropTypes.bool,
     loading: PropTypes.bool,
     logo: PropTypes.string,
     onActivateCostumesTab: PropTypes.func,

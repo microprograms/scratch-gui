@@ -22,6 +22,7 @@ import {MenuItem, MenuSection} from '../menu/menu.jsx';
 import ProjectTitleInput from './project-title-input.jsx';
 import AuthorInfo from './author-info.jsx';
 import SB3Downloader from '../../containers/sb3-downloader.jsx';
+import FlyingbearsHomeworkUploader from '../../containers/flyingbears-homework-uploader.jsx';
 import MenuBarHOC from '../../containers/menu-bar-hoc.jsx';
 
 import {openTipsLibrary} from '../../reducers/modals';
@@ -151,6 +152,9 @@ class MenuBar extends React.Component {
             'getSaveToComputerHandler',
             'restoreOptionMessage'
         ]);
+        this.state = {
+            isFlyingbearsHomeworkSubmited: this.props.isFlyingbearsHomeworkSubmited
+        }
     }
     componentDidMount () {
         document.addEventListener('keydown', this.handleKeyPress);
@@ -206,9 +210,6 @@ class MenuBar extends React.Component {
             }
         }
     }
-    handleClickFlyingbearsSubmitHomeworkButton () {
-        alert("提交作业");
-    }
     handleRestoreOption (restoreFun) {
         return () => {
             restoreFun();
@@ -231,6 +232,20 @@ class MenuBar extends React.Component {
                 this.props.onProjectTelemetryEvent('projectDidSave', metadata);
             }
         };
+    }
+    getSubmitHomeworkHandler (uploadHomework) {
+        return () => {
+            uploadHomework();
+            if (this.props.onProjectTelemetryEvent) {
+                const metadata = collectMetadata(this.props.vm, this.props.projectTitle, this.props.locale);
+                this.props.onProjectTelemetryEvent('projectDidSave', metadata);
+            }
+        };
+    }
+    onUploadFinished () {
+        this.setState({
+            'isFlyingbearsHomeworkSubmited': true
+        });
     }
     handleLanguageMouseUp (e) {
         if (!this.props.languageMenuOpen) {
@@ -429,13 +444,17 @@ class MenuBar extends React.Component {
                             username={this.props.authorUsername}
                         />
                     ) : null)}
-                    <FlyingbearsSubmitHomeworkButton
-                        className={styles.menuBarButton}
-                        isSubmited={this.props.isFlyingbearsHomeworkSubmited}
-                        onClick={() => {
-                            this.handleClickFlyingbearsSubmitHomeworkButton();
-                        }}
-                    />
+                    <FlyingbearsHomeworkUploader
+                        onUploadFinished={this.onUploadFinished.bind(this)}
+                    >
+                        {(className, uploadHomework) => (
+                            <FlyingbearsSubmitHomeworkButton
+                                className={styles.menuBarButton}
+                                isSubmited={this.state.isFlyingbearsHomeworkSubmited}
+                                onClick={this.getSubmitHomeworkHandler(uploadHomework)}
+                            />
+                        )}
+                    </FlyingbearsHomeworkUploader>
                 </div>
             </Box>
         );
