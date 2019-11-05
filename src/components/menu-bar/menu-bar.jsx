@@ -15,6 +15,7 @@ import {ComingSoonTooltip} from '../coming-soon/coming-soon.jsx';
 import Divider from '../divider/divider.jsx';
 import FlyingbearsLanguageSelector from '../../containers/flyingbears-language-selector.jsx';
 import FlyingbearsRedo from '../../containers/flyingbears-redo.jsx';
+import FlyingbearsSubmitHomeworkButton from './flyingbears-submit-homework-button.jsx';
 import SBFileUploader from '../../containers/sb-file-uploader.jsx';
 import MenuBarMenu from './menu-bar-menu.jsx';
 import {MenuItem, MenuSection} from '../menu/menu.jsx';
@@ -204,6 +205,9 @@ class MenuBar extends React.Component {
                 waitForUpdate(false); // immediately transition to project page
             }
         }
+    }
+    handleClickFlyingbearsSubmitHomeworkButton () {
+        alert("提交作业");
     }
     handleRestoreOption (restoreFun) {
         return () => {
@@ -425,6 +429,13 @@ class MenuBar extends React.Component {
                             username={this.props.authorUsername}
                         />
                     ) : null)}
+                    <FlyingbearsSubmitHomeworkButton
+                        className={styles.menuBarButton}
+                        isSubmited={this.props.isFlyingbearsHomeworkSubmited}
+                        onClick={() => {
+                            this.handleClickFlyingbearsSubmitHomeworkButton();
+                        }}
+                    />
                 </div>
             </Box>
         );
@@ -453,6 +464,7 @@ MenuBar.propTypes = {
     intl: intlShape,
     isRtl: PropTypes.bool,
     isShared: PropTypes.bool,
+    isFlyingbearsHomeworkSubmited: PropTypes.bool,
     isShowingProject: PropTypes.bool,
     isUpdating: PropTypes.bool,
     languageMenuOpen: PropTypes.bool,

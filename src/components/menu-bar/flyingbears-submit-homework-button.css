@@ -1,0 +1,18 @@
+@import "../../css/colors.css";
+
+.submit-homework-button {
+    background: $data-primary;
+}
+
+.submit-homework-button.hoverable {
+    cursor: pointer;
+}
+
+.submit-homework-button.hoverable:hover {
+    background-color: rgb(250, 126, 39);
+}
+
+.submit-homework-button-is-submited {
+    background: $ui-black-transparent;
+    cursor: default;
+}
