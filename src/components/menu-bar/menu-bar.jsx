@@ -559,7 +559,7 @@ MenuBar.propTypes = {
 };
 
 MenuBar.defaultProps = {
-    logo: '/static/logo.svg',
+    logo: 'static/logo.svg',
     onShare: () => {}
 };
 

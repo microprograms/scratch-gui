@@ -73,7 +73,7 @@ const StageHeaderComponent = function (props) {
                 >
                     <img
                         alt="Scratch"
-                        src="/static/logo.svg"
+                        src="static/logo.svg"
                     />
                 </a>
             </div>
