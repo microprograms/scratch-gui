@@ -16,7 +16,6 @@ import largeStageIcon from './icon--large-stage.svg';
 import smallStageIcon from './icon--small-stage.svg';
 import unFullScreenIcon from './icon--unfullscreen.svg';
 
-import scratchLogo from '../menu-bar/scratch-logo.svg';
 import styles from './stage-header.css';
 
 const messages = defineMessages({
@@ -74,7 +73,7 @@ const StageHeaderComponent = function (props) {
                 >
                     <img
                         alt="Scratch"
-                        src={scratchLogo}
+                        src="/static/logo.svg"
                     />
                 </a>
             </div>

@@ -62,8 +62,6 @@ import styles from './menu-bar.css';
 import helpIcon from '../../lib/assets/icon--tutorials.svg';
 import remixIcon from './icon--remix.svg';
 
-import scratchLogo from './scratch-logo.svg';
-
 import sharedMessages from '../../lib/shared-messages';
 
 import fileManagerSaveIcon from './file-manager-save.svg';
@@ -561,7 +559,7 @@ MenuBar.propTypes = {
 };
 
 MenuBar.defaultProps = {
-    logo: scratchLogo,
+    logo: '/static/logo.svg',
     onShare: () => {}
 };
 
