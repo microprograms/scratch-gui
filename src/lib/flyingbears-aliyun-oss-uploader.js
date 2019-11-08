@@ -10,13 +10,13 @@ const getSignature = (callback) => {
     };
 }
 
-const upload = (filename, blob, uploadFinishedCallback) => {
+const upload = (finalFilename, blob, uploadFinishedCallback) => {
     getSignature((responseText) => {
         const signatureObject = JSON.parse(responseText);
 
         const formData = new FormData();
-        formData.append('name', filename);
-        formData.append('key', signatureObject['dir'] + filename);
+        formData.append('name', finalFilename);
+        formData.append('key', signatureObject['dir'] + finalFilename);
         formData.append('policy', signatureObject['policy']);
         formData.append('OSSAccessKeyId', signatureObject['accessid']);
         formData.append('success_action_status', '200');
@@ -29,7 +29,7 @@ const upload = (filename, blob, uploadFinishedCallback) => {
         xhr.send(formData);
         xhr.onreadystatechange = () => {
             if (xhr.readyState == 4) {
-                uploadFinishedCallback(xhr);
+                uploadFinishedCallback(finalFilename);
             }
         };
     });

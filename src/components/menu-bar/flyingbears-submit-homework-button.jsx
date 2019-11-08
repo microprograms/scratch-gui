@@ -22,7 +22,7 @@ const FlyingbearsSubmitHomeworkButton = ({
     >
         {isSubmited ? (
             <FormattedMessage
-                defaultMessage="Homework Submited"
+                defaultMessage="Submit Homework"
                 id="gui.menuBar.isHomeworkSubmited"
             />
         ) : (

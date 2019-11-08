@@ -23,6 +23,7 @@ import ProjectTitleInput from './project-title-input.jsx';
 import AuthorInfo from './author-info.jsx';
 import SB3Downloader from '../../containers/sb3-downloader.jsx';
 import FlyingbearsHomeworkUploader from '../../containers/flyingbears-homework-uploader.jsx';
+import FlyingbearsShareQrcode from './flyingbears-share-qrcode.jsx';
 import {fn_url_args} from '../../lib/flyingbears-fn';
 import MenuBarHOC from '../../containers/menu-bar-hoc.jsx';
 
@@ -67,6 +68,8 @@ import sharedMessages from '../../lib/shared-messages';
 import fileManagerSaveIcon from './file-manager-save.svg';
 import fileManagerDownloadIcon from './file-manager-download.svg';
 import fileManagerOpenIcon from './file-manager-open.svg';
+
+import swal from '@sweetalert/with-react'
 
 const ariaMessages = defineMessages({
     language: {
@@ -242,10 +245,32 @@ class MenuBar extends React.Component {
             }
         };
     }
-    onUploadFinished () {
+    onUploadFinished (finalFilename) {
         this.setState({
             'isFlyingbearsHomeworkSubmited': true
         });
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', 'http://47.105.83.254:9701/api');
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState == 4) {
+                const response = JSON.parse(xhr.responseText);
+                if (response.code == 'success') {
+                    swal(
+                        <FlyingbearsShareQrcode qrcodeDataUrl={response.dataUrl}>
+                        </FlyingbearsShareQrcode>
+                    );
+                }
+            }
+        };
+        xhr.send(JSON.stringify({
+            "apiName": "module-micro-api-qrcode.createQrcodeAsDataUrl",
+            "text": "http://scratch.flyingbears.cn/editor/index.html?lessonId=homework/" + finalFilename,
+            "width": "600",
+            "height": "600",
+            "margin": "2",
+            "format": "png",
+            "mimeType": "image/png"
+        }));
     }
     autoLoadLesson () {
         const urlArgs = fn_url_args();
