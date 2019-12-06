@@ -1,5 +1,5 @@
 const getSignature = (callback) => {
-    const serverUrl = 'http://47.105.83.254:9702/api';
+    const serverUrl = 'http://scratch.flyingbears.cn:9702/api';
     const xhr = new XMLHttpRequest();
     xhr.open('GET', serverUrl);
     xhr.send();

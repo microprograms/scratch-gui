@@ -47,7 +47,9 @@ class FlyingbearsAutoLoad extends React.Component {
         }
 
         this.props.onLoadingStarted(this.props.loadingState);
-        const downloadUrl = 'http://47.105.83.254:9702/download?objectName=' + lessonId;
+
+        const aliyunOssDownloadUrlPrefix = 'http://scratch.flyingbears.cn:9702/download?objectName=';
+        const downloadUrl = aliyunOssDownloadUrlPrefix + lessonId;
         const xhr = new XMLHttpRequest();
         xhr.open('GET', downloadUrl);
         xhr.responseType = 'blob';

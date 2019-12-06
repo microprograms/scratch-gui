@@ -252,15 +252,12 @@ class MenuBar extends React.Component {
             'isFlyingbearsHomeworkSubmited': true
         });
         const xhr = new XMLHttpRequest();
-        xhr.open('POST', 'http://47.105.83.254:9701/api');
+        xhr.open('POST', 'http://scratch.flyingbears.cn:9701/api');
         xhr.onreadystatechange = () => {
             if (xhr.readyState == 4) {
                 const response = JSON.parse(xhr.responseText);
                 if (response.code == 'success') {
-                    swal(
-                        <FlyingbearsShareQrcode qrcodeDataUrl={response.dataUrl}>
-                        </FlyingbearsShareQrcode>
-                    );
+                    swal(<FlyingbearsShareQrcode qrcodeDataUrl={response.dataUrl} />);
                 }
             }
         };
