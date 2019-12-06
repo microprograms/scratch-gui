@@ -27,8 +27,13 @@ import FlyingbearsShareQrcode from './flyingbears-share-qrcode.jsx';
 import {fn_url_args} from '../../lib/flyingbears-fn';
 import MenuBarHOC from '../../containers/menu-bar-hoc.jsx';
 
-import {openTipsLibrary} from '../../reducers/modals';
+import {
+    openTipsLibrary,
+    openLoadingProject,
+    closeLoadingProject,
+} from '../../reducers/modals';
 import {setPlayer} from '../../reducers/mode';
+
 import {
     autoUpdateProject,
     getIsUpdating,
@@ -36,7 +41,11 @@ import {
     manualUpdateProject,
     requestNewProject,
     remixProject,
-    saveProjectAsCopy
+    saveProjectAsCopy,
+    LoadingStates,
+    onLoadedProject,
+    createProject,
+    doneCreatingProject,
 } from '../../reducers/project-state';
 import {
     openAccountMenu,
@@ -70,6 +79,8 @@ import fileManagerDownloadIcon from './file-manager-download.svg';
 import fileManagerOpenIcon from './file-manager-open.svg';
 
 import swal from '@sweetalert/with-react'
+
+import {setProjectTitle} from '../../reducers/project-title';
 
 const ariaMessages = defineMessages({
     language: {
@@ -152,7 +163,9 @@ class MenuBar extends React.Component {
             'handleLanguageMouseUp',
             'handleRestoreOption',
             'getSaveToComputerHandler',
-            'restoreOptionMessage'
+            'restoreOptionMessage',
+            'autoLoadLesson',
+            'getProjectTitleFromFilename',
         ]);
         this.state = {
             isFlyingbearsHomeworkSubmited: this.props.isFlyingbearsHomeworkSubmited
@@ -272,12 +285,22 @@ class MenuBar extends React.Component {
             "mimeType": "image/png"
         }));
     }
+    getProjectTitleFromFilename (filename) {
+        if (!filename) return '';
+        // only parse title with valid scratch project extensions
+        // (.sb, .sb2, and .sb3)
+        const matches = filename.match(/^(.*)\.sb[23]?$/);
+        if (!matches) return '';
+        return matches[1].substring(0, 100); // truncate project title to max 100 chars
+    }
     autoLoadLesson () {
         const urlArgs = fn_url_args();
         const lessonId = urlArgs['lessonId'];
         if (!lessonId) {
             return;
         }
+
+        this.props.onLoadingStarted(this.props.loadingState);
         const downloadUrl = 'http://47.105.83.254:9702/download?objectName=' + lessonId;
         const xhr = new XMLHttpRequest();
         xhr.open('GET', downloadUrl);
@@ -285,15 +308,17 @@ class MenuBar extends React.Component {
         xhr.onreadystatechange = () => {
             if (xhr.readyState == 4) {
                 const blob = new Blob([xhr.response]);
-                const filename = lessonId.substring(lessonId.lastIndexOf('/') + 1);
+                const projectTitle = this.getProjectTitleFromFilename(lessonId.substring(lessonId.lastIndexOf('/') + 1));
                 const reader = new FileReader();
                 reader.readAsArrayBuffer(blob);
                 reader.onload = () => {
                     this.props.vm.loadProject(reader.result)
                         .then(() => {
-                            // alert('done');
+                            this.props.onLoadingFinished(this.props.loadingState, true);
+                            this.props.onReceivedProjectTitle(projectTitle);
                         })
                         .catch(error => {
+                            console.warn(error);
                             const messages = defineMessages({
                                 loadError: {
                                     id: 'gui.projectLoader.loadError',
@@ -302,6 +327,7 @@ class MenuBar extends React.Component {
                                 }
                             });
                             alert(this.props.intl.formatMessage(messages.loadError)); // eslint-disable-line no-alert
+                            this.props.onLoadingFinished(this.props.loadingState, false);
                         });
                 };
             }
@@ -580,7 +606,11 @@ MenuBar.propTypes = {
     showComingSoon: PropTypes.bool,
     userOwnsProject: PropTypes.bool,
     username: PropTypes.string,
-    vm: PropTypes.instanceOf(VM).isRequired
+    vm: PropTypes.instanceOf(VM).isRequired,
+    loadingState: PropTypes.oneOf(LoadingStates),
+    onLoadingStarted: PropTypes.func,
+    onLoadingFinished: PropTypes.func,
+    onReceivedProjectTitle: PropTypes.func,
 };
 
 MenuBar.defaultProps = {
@@ -598,6 +628,7 @@ const mapStateToProps = (state, ownProps) => {
         isRtl: state.locales.isRtl,
         isUpdating: getIsUpdating(loadingState),
         isShowingProject: getIsShowingProject(loadingState),
+        loadingState: loadingState,
         languageMenuOpen: languageMenuOpen(state),
         locale: state.locales.locale,
         loginMenuOpen: loginMenuOpen(state),
@@ -627,7 +658,16 @@ const mapDispatchToProps = dispatch => ({
     onClickRemix: () => dispatch(remixProject()),
     onClickSave: () => dispatch(manualUpdateProject()),
     onClickSaveAsCopy: () => dispatch(saveProjectAsCopy()),
-    onSeeCommunity: () => dispatch(setPlayer(true))
+    onSeeCommunity: () => dispatch(setPlayer(true)),
+    onLoadingStarted: (loadingState) => {
+        console.log('onLoadingStarted', loadingState);
+        dispatch(openLoadingProject());
+    },
+    onLoadingFinished: (loadingState, success) => {
+        console.log('onLoadingFinished', loadingState, success);
+        dispatch(closeLoadingProject());
+    },
+    onReceivedProjectTitle: title => dispatch(setProjectTitle(title)),
 });
 
 export default compose(
