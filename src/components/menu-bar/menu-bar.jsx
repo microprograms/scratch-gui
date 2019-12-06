@@ -24,13 +24,11 @@ import AuthorInfo from './author-info.jsx';
 import SB3Downloader from '../../containers/sb3-downloader.jsx';
 import FlyingbearsHomeworkUploader from '../../containers/flyingbears-homework-uploader.jsx';
 import FlyingbearsShareQrcode from './flyingbears-share-qrcode.jsx';
-import {fn_url_args} from '../../lib/flyingbears-fn';
+import FlyingbearsAutoLoad from './flyingbears-auto-load.jsx';
 import MenuBarHOC from '../../containers/menu-bar-hoc.jsx';
 
 import {
     openTipsLibrary,
-    openLoadingProject,
-    closeLoadingProject,
 } from '../../reducers/modals';
 import {setPlayer} from '../../reducers/mode';
 
@@ -42,10 +40,6 @@ import {
     requestNewProject,
     remixProject,
     saveProjectAsCopy,
-    LoadingStates,
-    onLoadedProject,
-    createProject,
-    doneCreatingProject,
 } from '../../reducers/project-state';
 import {
     openAccountMenu,
@@ -79,8 +73,6 @@ import fileManagerDownloadIcon from './file-manager-download.svg';
 import fileManagerOpenIcon from './file-manager-open.svg';
 
 import swal from '@sweetalert/with-react'
-
-import {setProjectTitle} from '../../reducers/project-title';
 
 const ariaMessages = defineMessages({
     language: {
@@ -164,8 +156,6 @@ class MenuBar extends React.Component {
             'handleRestoreOption',
             'getSaveToComputerHandler',
             'restoreOptionMessage',
-            'autoLoadLesson',
-            'getProjectTitleFromFilename',
         ]);
         this.state = {
             isFlyingbearsHomeworkSubmited: this.props.isFlyingbearsHomeworkSubmited
@@ -173,7 +163,6 @@ class MenuBar extends React.Component {
     }
     componentDidMount () {
         document.addEventListener('keydown', this.handleKeyPress);
-        this.autoLoadLesson();
     }
     componentWillUnmount () {
         document.removeEventListener('keydown', this.handleKeyPress);
@@ -285,55 +274,6 @@ class MenuBar extends React.Component {
             "mimeType": "image/png"
         }));
     }
-    getProjectTitleFromFilename (filename) {
-        if (!filename) return '';
-        // only parse title with valid scratch project extensions
-        // (.sb, .sb2, and .sb3)
-        const matches = filename.match(/^(.*)\.sb[23]?$/);
-        if (!matches) return '';
-        return matches[1].substring(0, 100); // truncate project title to max 100 chars
-    }
-    autoLoadLesson () {
-        const urlArgs = fn_url_args();
-        const lessonId = urlArgs['lessonId'];
-        if (!lessonId) {
-            return;
-        }
-
-        this.props.onLoadingStarted(this.props.loadingState);
-        const downloadUrl = 'http://47.105.83.254:9702/download?objectName=' + lessonId;
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', downloadUrl);
-        xhr.responseType = 'blob';
-        xhr.onreadystatechange = () => {
-            if (xhr.readyState == 4) {
-                const blob = new Blob([xhr.response]);
-                const projectTitle = this.getProjectTitleFromFilename(lessonId.substring(lessonId.lastIndexOf('/') + 1));
-                const reader = new FileReader();
-                reader.readAsArrayBuffer(blob);
-                reader.onload = () => {
-                    this.props.vm.loadProject(reader.result)
-                        .then(() => {
-                            this.props.onLoadingFinished(this.props.loadingState, true);
-                            this.props.onReceivedProjectTitle(projectTitle);
-                        })
-                        .catch(error => {
-                            console.warn(error);
-                            const messages = defineMessages({
-                                loadError: {
-                                    id: 'gui.projectLoader.loadError',
-                                    defaultMessage: 'The project file that was selected failed to load.',
-                                    description: 'An error that displays when a local project file fails to load.'
-                                }
-                            });
-                            alert(this.props.intl.formatMessage(messages.loadError)); // eslint-disable-line no-alert
-                            this.props.onLoadingFinished(this.props.loadingState, false);
-                        });
-                };
-            }
-        };
-        xhr.send();
-    }
     handleLanguageMouseUp (e) {
         if (!this.props.languageMenuOpen) {
             this.props.onClickLanguage(e);
@@ -433,6 +373,7 @@ class MenuBar extends React.Component {
                         {(this.props.canChangeLanguage) && (
                             <FlyingbearsLanguageSelector label={this.props.intl.formatMessage(ariaMessages.language)} />
                         )}
+                        <FlyingbearsAutoLoad />
                         <FlyingbearsRedo currentHomeworkId='placeholder' />
                         {(this.props.canManageFiles) && (
                             <div
@@ -607,10 +548,6 @@ MenuBar.propTypes = {
     userOwnsProject: PropTypes.bool,
     username: PropTypes.string,
     vm: PropTypes.instanceOf(VM).isRequired,
-    loadingState: PropTypes.oneOf(LoadingStates),
-    onLoadingStarted: PropTypes.func,
-    onLoadingFinished: PropTypes.func,
-    onReceivedProjectTitle: PropTypes.func,
 };
 
 MenuBar.defaultProps = {
@@ -628,7 +565,6 @@ const mapStateToProps = (state, ownProps) => {
         isRtl: state.locales.isRtl,
         isUpdating: getIsUpdating(loadingState),
         isShowingProject: getIsShowingProject(loadingState),
-        loadingState: loadingState,
         languageMenuOpen: languageMenuOpen(state),
         locale: state.locales.locale,
         loginMenuOpen: loginMenuOpen(state),
@@ -659,15 +595,6 @@ const mapDispatchToProps = dispatch => ({
     onClickSave: () => dispatch(manualUpdateProject()),
     onClickSaveAsCopy: () => dispatch(saveProjectAsCopy()),
     onSeeCommunity: () => dispatch(setPlayer(true)),
-    onLoadingStarted: (loadingState) => {
-        console.log('onLoadingStarted', loadingState);
-        dispatch(openLoadingProject());
-    },
-    onLoadingFinished: (loadingState, success) => {
-        console.log('onLoadingFinished', loadingState, success);
-        dispatch(closeLoadingProject());
-    },
-    onReceivedProjectTitle: title => dispatch(setProjectTitle(title)),
 });
 
 export default compose(

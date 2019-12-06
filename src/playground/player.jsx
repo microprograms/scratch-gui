@@ -12,6 +12,8 @@ import AppStateHOC from '../lib/app-state-hoc.jsx';
 
 import {setPlayer} from '../reducers/mode';
 
+import FlyingbearsAutoLoad from '../components/menu-bar/flyingbears-auto-load.jsx';
+
 if (process.env.NODE_ENV === 'production' && typeof window === 'object') {
     // Warn before navigating away
     window.onbeforeunload = () => true;
@@ -21,12 +23,13 @@ import styles from './player.css';
 
 const Player = ({isPlayerOnly, onSeeInside, projectId}) => (
     <Box className={classNames(isPlayerOnly ? styles.stageOnly : styles.editor)}>
-        {isPlayerOnly && <button onClick={onSeeInside}>{'See inside'}</button>}
+        <FlyingbearsAutoLoad />
         <GUI
             canEditTitle
             enableCommunity
             isPlayerOnly={isPlayerOnly}
             projectId={projectId}
+            canSave={false}
         />
     </Box>
 );
