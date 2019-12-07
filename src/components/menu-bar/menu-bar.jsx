@@ -262,8 +262,8 @@ class MenuBar extends React.Component {
             }
         };
         xhr.send(JSON.stringify({
-            "apiName": "module-micro-api-qrcode.createQrcodeAsDataUrl",
-            "text": "http://scratch.flyingbears.cn/editor/index.html?lessonId=homework/" + finalFilename,
+            "apiName": "module_micro_api_qrcode.api.CreateQrcodeAsDataUrl",
+            "text": "http://scratch.flyingbears.cn/editor/player.html?lessonId=homework/" + finalFilename,
             "width": "600",
             "height": "600",
             "margin": "2",
