@@ -64,34 +64,6 @@ const StageHeaderComponent = function (props) {
 
     if (isFullScreen) {
         const stageDimensions = getStageDimensions(null, true);
-        const stageButton = showBranding ? (
-            <div className={styles.embedScratchLogo}>
-                <a
-                    href="https://scratch.mit.edu"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                >
-                    <img
-                        alt="Scratch"
-                        src="static/logo.svg"
-                    />
-                </a>
-            </div>
-        ) : (
-            <Button
-                className={styles.stageButton}
-                onClick={onSetStageUnFull}
-                onKeyPress={onKeyPress}
-            >
-                <img
-                    alt={props.intl.formatMessage(messages.unFullStageSizeMessage)}
-                    className={styles.stageButtonIcon}
-                    draggable={false}
-                    src={unFullScreenIcon}
-                    title={props.intl.formatMessage(messages.fullscreenControl)}
-                />
-            </Button>
-        );
         header = (
             <Box className={styles.stageHeaderWrapperOverlay}>
                 <Box
@@ -99,72 +71,84 @@ const StageHeaderComponent = function (props) {
                     style={{width: stageDimensions.width}}
                 >
                     <Controls vm={vm} />
-                    {stageButton}
+                    {!isPlayerOnly &&
+                        <Button
+                            className={styles.stageButton}
+                            onClick={onSetStageUnFull}
+                            onKeyPress={onKeyPress}
+                        >
+                            <img
+                                alt={props.intl.formatMessage(messages.unFullStageSizeMessage)}
+                                className={styles.stageButtonIcon}
+                                draggable={false}
+                                src={unFullScreenIcon}
+                                title={props.intl.formatMessage(messages.fullscreenControl)}
+                            />
+                        </Button>
+                    }
                 </Box>
             </Box>
         );
     } else {
-        const stageControls =
-            isPlayerOnly ? (
-                []
-            ) : (
-                <div className={styles.stageSizeToggleGroup}>
-                    <div>
-                        <Button
-                            className={classNames(
-                                styles.stageButton,
-                                styles.stageButtonFirst,
-                                (stageSizeMode === STAGE_SIZE_MODES.small) ? null : styles.stageButtonToggledOff
-                            )}
-                            onClick={onSetStageSmall}
-                        >
-                            <img
-                                alt={props.intl.formatMessage(messages.smallStageSizeMessage)}
-                                className={styles.stageButtonIcon}
-                                draggable={false}
-                                src={smallStageIcon}
-                            />
-                        </Button>
-                    </div>
-                    <div>
-                        <Button
-                            className={classNames(
-                                styles.stageButton,
-                                styles.stageButtonLast,
-                                (stageSizeMode === STAGE_SIZE_MODES.large) ? null : styles.stageButtonToggledOff
-                            )}
-                            onClick={onSetStageLarge}
-                        >
-                            <img
-                                alt={props.intl.formatMessage(messages.largeStageSizeMessage)}
-                                className={styles.stageButtonIcon}
-                                draggable={false}
-                                src={largeStageIcon}
-                            />
-                        </Button>
-                    </div>
-                </div>
-            );
         header = (
             <Box className={styles.stageHeaderWrapper}>
                 <Box className={styles.stageMenuWrapper}>
                     <Controls vm={vm} />
                     <div className={styles.stageSizeRow}>
-                        {stageControls}
-                        <div>
-                            <Button
-                                className={styles.stageButton}
-                                onClick={onSetStageFull}
-                            >
-                                <img
-                                    alt={props.intl.formatMessage(messages.fullStageSizeMessage)}
-                                    className={styles.stageButtonIcon}
-                                    draggable={false}
-                                    src={fullScreenIcon}
-                                    title={props.intl.formatMessage(messages.fullscreenControl)}
-                                />
-                            </Button>
-                        </div>
+                        {!isPlayerOnly &&
+                            <>
+                                <div className={styles.stageSizeToggleGroup}>
+                                    <div>
+                                        <Button
+                                            className={classNames(
+                                                styles.stageButton,
+                                                styles.stageButtonFirst,
+                                                (stageSizeMode === STAGE_SIZE_MODES.small) ? null : styles.stageButtonToggledOff
+                                            )}
+                                            onClick={onSetStageSmall}
+                                        >
+                                            <img
+                                                alt={props.intl.formatMessage(messages.smallStageSizeMessage)}
+                                                className={styles.stageButtonIcon}
+                                                draggable={false}
+                                                src={smallStageIcon}
+                                            />
+                                        </Button>
+                                    </div>
+                                    <div>
+                                        <Button
+                                            className={classNames(
+                                                styles.stageButton,
+                                                styles.stageButtonLast,
+                                                (stageSizeMode === STAGE_SIZE_MODES.large) ? null : styles.stageButtonToggledOff
+                                            )}
+                                            onClick={onSetStageLarge}
+                                        >
+                                            <img
+                                                alt={props.intl.formatMessage(messages.largeStageSizeMessage)}
+                                                className={styles.stageButtonIcon}
+                                                draggable={false}
+                                                src={largeStageIcon}
+                                            />
+                                        </Button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <Button
+                                        className={styles.stageButton}
+                                        onClick={onSetStageFull}
+                                    >
+                                        <img
+                                            alt={props.intl.formatMessage(messages.fullStageSizeMessage)}
+                                            className={styles.stageButtonIcon}
+                                            draggable={false}
+                                            src={fullScreenIcon}
+                                            title={props.intl.formatMessage(messages.fullscreenControl)}
+                                        />
+                                    </Button>
+                                </div>
+                            </>
+                        }
                     </div>
                 </Box>
             </Box>
