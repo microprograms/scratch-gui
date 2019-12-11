@@ -73,6 +73,7 @@ import fileManagerDownloadIcon from './file-manager-download.svg';
 import fileManagerOpenIcon from './file-manager-open.svg';
 
 import swal from '@sweetalert/with-react'
+import {fn_url_args} from '../../lib/flyingbears-fn';
 
 const ariaMessages = defineMessages({
     language: {
@@ -247,10 +248,14 @@ class MenuBar extends React.Component {
             }
         };
     }
-    onUploadFinished (finalFilename) {
+    onUploadFinished (homeworkAliyunOssPath) {
         this.setState({
             'isFlyingbearsHomeworkSubmited': true
         });
+        this.swalFlyingbearsShareQrcode(homeworkAliyunOssPath);
+        this.flyingbearsSubmitHomework(homeworkAliyunOssPath);
+    }
+    swalFlyingbearsShareQrcode(homeworkAliyunOssPath) {
         const xhr = new XMLHttpRequest();
         xhr.open('POST', 'http://scratch.flyingbears.cn:9701/api');
         xhr.onreadystatechange = () => {
@@ -263,12 +268,37 @@ class MenuBar extends React.Component {
         };
         xhr.send(JSON.stringify({
             "apiName": "module_micro_api_qrcode.api.CreateQrcodeAsDataUrl",
-            "text": "http://scratch.flyingbears.cn/editor/player.html?lessonId=homework/" + finalFilename,
+            "text": "http://scratch.flyingbears.cn/editor/player.html?aliyunOssPath=" + homeworkAliyunOssPath,
             "width": "600",
             "height": "600",
             "margin": "2",
             "format": "png",
             "mimeType": "image/png"
+        }));
+    }
+    flyingbearsSubmitHomework(homeworkAliyunOssPath) {
+        const urlArgs = fn_url_args();
+        const studentId = urlArgs['studentId'];
+        const lessonStageId = urlArgs['lessonStageId'];
+        const lessonId = urlArgs['lessonId'];
+        const lessonSectionId = urlArgs['lessonSectionId'];
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', 'http://scratch.flyingbears.cn:9701/api');
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState == 4) {
+                const response = JSON.parse(xhr.responseText);
+                console.log('flyingbearsSubmitHomework ' + response.code);
+            }
+        };
+        xhr.send(JSON.stringify({
+            "apiName": "module_micro_api_scratch_flyingbears_cn_site.api.Homework_Submit_Api",
+            "lessonStageId": lessonStageId,
+            "lessonId": lessonId,
+            "lessonSectionId": lessonSectionId,
+            "studentId": studentId,
+            "name": "作业名称",
+            "desc": "作业的相关描述文字",
+            "aliyunOssPath": homeworkAliyunOssPath,
         }));
     }
     handleLanguageMouseUp (e) {

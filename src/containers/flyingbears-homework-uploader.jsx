@@ -16,17 +16,8 @@ class FlyingbearsHomeworkUploader extends React.Component {
     }
     uploadHomework () {
         this.props.saveProjectSb3().then(content => {
-            const label = '输入你的姓名：';
-            swal(label, {
-                content: 'input',
-            }).then((name) => {
-                if (name && name.replace(/ /g, '').length > 0) {
-                    const filename = getFilename();
-                    // eslint-disable-next-line max-len
-                    const finalFilename = getFileNameWithoutSuffix(filename) + '-' + name.replace(/ /g, '') + getFileSuffix(filename);
-                    uploadBlobToAliyunOss(finalFilename, content, this.props.onUploadFinished);
-                }
-            });
+            const finalFilename = getAliyunOssFinalFilename();
+            uploadBlobToAliyunOss(finalFilename, content, this.props.onUploadFinished(finalFilename));
         });
     }
     render () {
@@ -48,29 +39,19 @@ const getProjectFilename = (curTitle, defaultTitle) => {
     return `${filenameTitle.substring(0, 100)}.sb3`;
 };
 
-const getFilename = () => {
+const getAliyunOssFinalFilename = () => {
     const urlArgs = fn_url_args();
+    const studentId = urlArgs['studentId'];
+    const lessonStageId = urlArgs['lessonStageId'];
     const lessonId = urlArgs['lessonId'];
-    if (lessonId) {
-        return lessonId.substring(lessonId.lastIndexOf('/') + 1);
+    const aliyunOssPath = urlArgs['aliyunOssPath'];
+    if (aliyunOssPath) {
+        // 学员作业
+        return 'homework/' + studentId + '/' + lessonStageId + '/' + lessonId + '.sb3';
+    } else {
+        // 自由创作
+        return 'free-creation/' + studentId  + '.sb3';
     }
-    return this.props.projectFilename;
-};
-
-const getFileSuffix = (filename) => {
-    const index = filename.lastIndexOf('.');
-    if (index == -1) {
-        return '';
-    }
-    return filename.substring(index);
-};
-
-const getFileNameWithoutSuffix = (filename) => {
-    const index = filename.lastIndexOf('.');
-    if (index == -1) {
-        return filename;
-    }
-    return filename.substring(0, index);
 };
 
 FlyingbearsHomeworkUploader.propTypes = {

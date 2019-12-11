@@ -41,22 +41,22 @@ class FlyingbearsAutoLoad extends React.Component {
 
     autoLoadLesson () {
         const urlArgs = fn_url_args();
-        const lessonId = urlArgs['lessonId'];
-        if (!lessonId) {
+        const aliyunOssPath = urlArgs['aliyunOssPath'];
+        if (!aliyunOssPath) {
             return;
         }
 
         this.props.onLoadingStarted(this.props.loadingState);
 
         const aliyunOssDownloadUrlPrefix = 'http://scratch.flyingbears.cn:9702/download?objectName=';
-        const downloadUrl = aliyunOssDownloadUrlPrefix + lessonId;
+        const downloadUrl = aliyunOssDownloadUrlPrefix + aliyunOssPath;
         const xhr = new XMLHttpRequest();
         xhr.open('GET', downloadUrl);
         xhr.responseType = 'blob';
         xhr.onreadystatechange = () => {
             if (xhr.readyState == 4) {
                 const blob = new Blob([xhr.response]);
-                const projectTitle = this.getProjectTitleFromFilename(lessonId.substring(lessonId.lastIndexOf('/') + 1));
+                const projectTitle = this.getProjectTitleFromFilename(aliyunOssPath.substring(aliyunOssPath.lastIndexOf('/') + 1));
                 const reader = new FileReader();
                 reader.readAsArrayBuffer(blob);
                 reader.onload = () => {
