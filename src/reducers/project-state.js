@@ -22,6 +22,7 @@ const START_MANUAL_UPDATING = 'scratch-gui/project-state/START_MANUAL_UPDATING';
 const START_REMIXING = 'scratch-gui/project-state/START_REMIXING';
 const START_UPDATING_BEFORE_CREATING_COPY = 'scratch-gui/project-state/START_UPDATING_BEFORE_CREATING_COPY';
 const START_UPDATING_BEFORE_CREATING_NEW = 'scratch-gui/project-state/START_UPDATING_BEFORE_CREATING_NEW';
+const DONE_FLYINGBEARS_AUTO_LOADING_VM_WITHOUT_ID = 'scratch-gui/project-state/DONE_FLYINGBEARS_AUTO_LOADING_VM_WITHOUT_ID';
 
 const defaultProjectId = '0'; // hardcoded id of default project
 
@@ -364,6 +365,14 @@ const reducer = function (state, action) {
             });
         }
         return state;
+    case DONE_FLYINGBEARS_AUTO_LOADING_VM_WITHOUT_ID:
+        if (state.loadingState === LoadingState.FETCHING_NEW_DEFAULT) {
+            return Object.assign({}, state, {
+                loadingState: LoadingState.SHOWING_WITHOUT_ID,
+                projectId: defaultProjectId
+            });
+        }
+        return state;
     default:
         return state;
     }
@@ -505,6 +514,10 @@ const remixProject = () => ({
     type: START_REMIXING
 });
 
+const doneFlyingbearsAutoLoad = () => ({
+    type: DONE_FLYINGBEARS_AUTO_LOADING_VM_WITHOUT_ID
+});
+
 export {
     reducer as default,
     initialState as projectStateInitialState,
@@ -538,5 +551,6 @@ export {
     requestNewProject,
     requestProjectUpload,
     saveProjectAsCopy,
-    setProjectId
+    setProjectId,
+    doneFlyingbearsAutoLoad,
 };

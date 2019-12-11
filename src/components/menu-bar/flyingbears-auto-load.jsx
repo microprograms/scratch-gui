@@ -18,6 +18,10 @@ import {setProjectTitle} from '../../reducers/project-title';
 import VM from 'scratch-vm';
 import {defineMessages, injectIntl, intlShape, FormattedMessage} from 'react-intl';
 
+import {
+    doneFlyingbearsAutoLoad,
+} from '../../reducers/project-state';
+
 class FlyingbearsAutoLoad extends React.Component {
     constructor (props) {
         super(props);
@@ -108,11 +112,10 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = dispatch => ({
     onLoadingStarted: (loadingState) => {
-        console.log('onLoadingStarted', loadingState);
         dispatch(openLoadingProject());
     },
     onLoadingFinished: (loadingState, success) => {
-        console.log('onLoadingFinished', loadingState, success);
+        dispatch(doneFlyingbearsAutoLoad());
         dispatch(closeLoadingProject());
     },
     onReceivedProjectTitle: title => dispatch(setProjectTitle(title)),
