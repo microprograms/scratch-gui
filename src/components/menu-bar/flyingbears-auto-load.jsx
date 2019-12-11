@@ -16,6 +16,7 @@ import {
 import {setProjectTitle} from '../../reducers/project-title';
 
 import VM from 'scratch-vm';
+import {defineMessages, injectIntl, intlShape, FormattedMessage} from 'react-intl';
 
 class FlyingbearsAutoLoad extends React.Component {
     constructor (props) {
@@ -89,6 +90,7 @@ class FlyingbearsAutoLoad extends React.Component {
 }
 
 FlyingbearsAutoLoad.propTypes = {
+    intl: intlShape.isRequired,
     vm: PropTypes.instanceOf(VM).isRequired,
     loadingState: PropTypes.oneOf(LoadingStates),
     onLoadingStarted: PropTypes.func,
@@ -119,4 +121,4 @@ const mapDispatchToProps = dispatch => ({
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(FlyingbearsAutoLoad);
+)(injectIntl(FlyingbearsAutoLoad));

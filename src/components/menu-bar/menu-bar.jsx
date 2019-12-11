@@ -15,7 +15,6 @@ import {ComingSoonTooltip} from '../coming-soon/coming-soon.jsx';
 import Divider from '../divider/divider.jsx';
 import FlyingbearsLanguageSelector from '../../containers/flyingbears-language-selector.jsx';
 import FlyingbearsRedo from '../../containers/flyingbears-redo.jsx';
-import FlyingbearsSubmitHomeworkButton from './flyingbears-submit-homework-button.jsx';
 import SBFileUploader from '../../containers/sb-file-uploader.jsx';
 import MenuBarMenu from './menu-bar-menu.jsx';
 import {MenuItem, MenuSection} from '../menu/menu.jsx';
@@ -23,6 +22,9 @@ import ProjectTitleInput from './project-title-input.jsx';
 import AuthorInfo from './author-info.jsx';
 import SB3Downloader from '../../containers/sb3-downloader.jsx';
 import FlyingbearsHomeworkUploader from '../../containers/flyingbears-homework-uploader.jsx';
+import FlyingbearsSubmitHomeworkButton from './flyingbears-submit-homework-button.jsx';
+import FlyingbearsFreeCreationUploader from '../../containers/flyingbears-free-creation-uploader.jsx';
+import FlyingbearsSubmitFreeCreationButton from './flyingbears-submit-free-creation-button.jsx';
 import FlyingbearsShareQrcode from './flyingbears-share-qrcode.jsx';
 import FlyingbearsAutoLoad from './flyingbears-auto-load.jsx';
 import MenuBarHOC from '../../containers/menu-bar-hoc.jsx';
@@ -157,6 +159,11 @@ class MenuBar extends React.Component {
             'handleRestoreOption',
             'getSaveToComputerHandler',
             'restoreOptionMessage',
+            'isFreeCreationMode',
+            'onFreeCreationUploadFinished',
+            'onHomeworkUploadFinished',
+            'swalShareQrcode',
+            'createLessonSectionPass',
         ]);
         this.state = {
             isFlyingbearsHomeworkSubmited: this.props.isFlyingbearsHomeworkSubmited
@@ -239,23 +246,27 @@ class MenuBar extends React.Component {
             }
         };
     }
-    getSubmitHomeworkHandler (uploadHomework) {
-        return () => {
-            uploadHomework();
-            if (this.props.onProjectTelemetryEvent) {
-                const metadata = collectMetadata(this.props.vm, this.props.projectTitle, this.props.locale);
-                this.props.onProjectTelemetryEvent('projectDidSave', metadata);
-            }
-        };
+    isFreeCreationMode() {
+        const urlArgs = fn_url_args();
+        const aliyunOssPath = urlArgs['aliyunOssPath'];
+        if (aliyunOssPath) {
+            return false
+        }
+        return true
     }
-    onUploadFinished (homeworkAliyunOssPath) {
+    onFreeCreationUploadFinished(freeCreationAliyunOssPath) {
+        console.log('onFreeCreationUploadFinished', freeCreationAliyunOssPath);
+        this.swalShareQrcode(freeCreationAliyunOssPath);
+    }
+    onHomeworkUploadFinished(homeworkAliyunOssPath) {
+        console.log('onHomeworkUploadFinished', homeworkAliyunOssPath);
         this.setState({
             'isFlyingbearsHomeworkSubmited': true
         });
-        this.swalFlyingbearsShareQrcode(homeworkAliyunOssPath);
-        this.flyingbearsSubmitHomework(homeworkAliyunOssPath);
+        this.swalShareQrcode(homeworkAliyunOssPath);
+        this.createLessonSectionPass(homeworkAliyunOssPath);
     }
-    swalFlyingbearsShareQrcode(homeworkAliyunOssPath) {
+    swalShareQrcode(aliyunOssPath) {
         const xhr = new XMLHttpRequest();
         xhr.open('POST', 'http://scratch.flyingbears.cn:9701/api');
         xhr.onreadystatechange = () => {
@@ -268,7 +279,7 @@ class MenuBar extends React.Component {
         };
         xhr.send(JSON.stringify({
             "apiName": "module_micro_api_qrcode.api.CreateQrcodeAsDataUrl",
-            "text": "http://scratch.flyingbears.cn/editor/player.html?aliyunOssPath=" + homeworkAliyunOssPath,
+            "text": "http://scratch.flyingbears.cn/editor/player.html?aliyunOssPath=" + aliyunOssPath,
             "width": "600",
             "height": "600",
             "margin": "2",
@@ -276,7 +287,7 @@ class MenuBar extends React.Component {
             "mimeType": "image/png"
         }));
     }
-    flyingbearsSubmitHomework(homeworkAliyunOssPath) {
+    createLessonSectionPass(homeworkAliyunOssPath) {
         const urlArgs = fn_url_args();
         const studentId = urlArgs['studentId'];
         const lessonStageId = urlArgs['lessonStageId'];
@@ -499,17 +510,30 @@ class MenuBar extends React.Component {
                             username={this.props.authorUsername}
                         />
                     ) : null)}
-                    <FlyingbearsHomeworkUploader
-                        onUploadFinished={this.onUploadFinished.bind(this)}
-                    >
-                        {(className, uploadHomework) => (
-                            <FlyingbearsSubmitHomeworkButton
-                                className={styles.menuBarButton}
-                                isSubmited={this.state.isFlyingbearsHomeworkSubmited}
-                                onClick={this.getSubmitHomeworkHandler(uploadHomework)}
-                            />
-                        )}
-                    </FlyingbearsHomeworkUploader>
+                    {this.isFreeCreationMode() ?
+                        <FlyingbearsFreeCreationUploader
+                            onUploadFinished={this.onFreeCreationUploadFinished.bind(this)}
+                        >
+                            {(className, upload) => (
+                                <FlyingbearsSubmitFreeCreationButton
+                                    className={styles.menuBarButton}
+                                    onClick={e => upload()}
+                                />
+                            )}
+                        </FlyingbearsFreeCreationUploader>
+                        :
+                        <FlyingbearsHomeworkUploader
+                            onUploadFinished={this.onHomeworkUploadFinished.bind(this)}
+                        >
+                            {(className, upload) => (
+                                <FlyingbearsSubmitHomeworkButton
+                                    className={styles.menuBarButton}
+                                    isSubmited={this.state.isFlyingbearsHomeworkSubmited}
+                                    onClick={e => upload()}
+                                />
+                            )}
+                        </FlyingbearsHomeworkUploader>
+                    }
                 </div>
             </Box>
         );

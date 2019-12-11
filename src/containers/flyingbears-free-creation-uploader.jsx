@@ -6,7 +6,7 @@ import {projectTitleInitialState} from '../reducers/project-title';
 import {fn_url_args} from '../lib/flyingbears-fn';
 import uploadBlobToAliyunOss from '../lib/flyingbears-aliyun-oss-uploader.js';
 
-class FlyingbearsHomeworkUploader extends React.Component {
+class FlyingbearsFreeCreationUploader extends React.Component {
     constructor (props) {
         super(props);
         bindAll(this, [
@@ -33,9 +33,7 @@ class FlyingbearsHomeworkUploader extends React.Component {
 const getAliyunOssFinalFilename = () => {
     const urlArgs = fn_url_args();
     const studentId = urlArgs['studentId'];
-    const lessonStageId = urlArgs['lessonStageId'];
-    const lessonId = urlArgs['lessonId'];
-    return 'homework/' + studentId + '/' + lessonStageId + '/' + lessonId + '.sb3';
+    return 'free-creation/' + studentId  + '.sb3';
 };
 
 const getProjectFilename = (curTitle, defaultTitle) => {
@@ -46,7 +44,7 @@ const getProjectFilename = (curTitle, defaultTitle) => {
     return `${filenameTitle.substring(0, 100)}.sb3`;
 };
 
-FlyingbearsHomeworkUploader.propTypes = {
+FlyingbearsFreeCreationUploader.propTypes = {
     children: PropTypes.func,
     className: PropTypes.string,
     onUploadFinished: PropTypes.func,
@@ -54,7 +52,7 @@ FlyingbearsHomeworkUploader.propTypes = {
     saveProjectSb3: PropTypes.func
 };
 
-FlyingbearsHomeworkUploader.defaultProps = {
+FlyingbearsFreeCreationUploader.defaultProps = {
     className: ''
 };
 
@@ -66,4 +64,4 @@ const mapStateToProps = state => ({
 export default connect(
     mapStateToProps,
     () => ({}) // omit dispatch prop
-)(FlyingbearsHomeworkUploader);
+)(FlyingbearsFreeCreationUploader);

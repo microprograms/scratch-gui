@@ -1,0 +1,13 @@
+@import "../../css/colors.css";
+
+.submit-free-creation-button {
+    background: $data-primary;
+}
+
+.submit-free-creation-button.hoverable {
+    cursor: pointer;
+}
+
+.submit-free-creation-button.hoverable:hover {
+    background-color: rgb(250, 126, 39);
+}

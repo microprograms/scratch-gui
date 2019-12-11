@@ -12,7 +12,7 @@ class FlyingbearsShareQrcode extends React.Component {
                     styles.qrcode
                 )}
             />
-            <p>作业提交成功</p>
+            <p>提交成功</p>
             <p>微信扫描二维码，和朋友们分享乐趣</p>
         </div>)
     }
