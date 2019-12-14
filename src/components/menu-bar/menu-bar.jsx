@@ -296,7 +296,7 @@ class MenuBar extends React.Component {
             }
         };
         xhr.send(JSON.stringify({
-            "apiName": "module_micro_api_scratch_flyingbears_cn_site.api.Homework_CreateNew_Api",
+            "apiName": "module_micro_api_scratch_flyingbears_cn_site.api.Homework_Submit_Api",
             "lessonStageId": lessonStageId,
             "lessonId": lessonId,
             "lessonSectionId": lessonSectionId,
