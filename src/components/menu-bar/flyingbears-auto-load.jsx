@@ -46,6 +46,7 @@ class FlyingbearsAutoLoad extends React.Component {
 
     autoLoadLesson () {
         const urlArgs = fn_url_args();
+        const mode = urlArgs['mode'];   // free-creation, new-homework, edit-homework
         const aliyunOssPath = urlArgs['aliyunOssPath'];
         if (!aliyunOssPath) {
             return;

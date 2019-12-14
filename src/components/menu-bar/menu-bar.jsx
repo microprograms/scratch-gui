@@ -248,11 +248,11 @@ class MenuBar extends React.Component {
     }
     isFreeCreationMode() {
         const urlArgs = fn_url_args();
-        const aliyunOssPath = urlArgs['aliyunOssPath'];
-        if (aliyunOssPath) {
-            return false
+        const mode = urlArgs['mode'];   // free-creation, new-homework, edit-homework
+        if (mode && mode == 'free-creation') {
+            return true
         }
-        return true
+        return false
     }
     onFreeCreationUploadFinished(freeCreationAliyunOssPath) {
         console.log('onFreeCreationUploadFinished', freeCreationAliyunOssPath);
