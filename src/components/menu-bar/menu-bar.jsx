@@ -159,11 +159,11 @@ class MenuBar extends React.Component {
             'handleRestoreOption',
             'getSaveToComputerHandler',
             'restoreOptionMessage',
-            'isFreeCreationMode',
-            'onFreeCreationUploadFinished',
-            'onHomeworkUploadFinished',
+            'getHomeworkMode',
             'swalShareQrcode',
-            'createLessonSectionPass',
+            'onFreeCreationUploadFinished',
+            'onNewHomeworkUploadFinished',
+            'onEditHomeworkUploadFinished',
         ]);
         this.state = {
             isFlyingbearsHomeworkSubmited: this.props.isFlyingbearsHomeworkSubmited
@@ -246,25 +246,9 @@ class MenuBar extends React.Component {
             }
         };
     }
-    isFreeCreationMode() {
+    getHomeworkMode() {
         const urlArgs = fn_url_args();
-        const mode = urlArgs['mode'];   // free-creation, new-homework, edit-homework
-        if (mode && mode == 'free-creation') {
-            return true
-        }
-        return false
-    }
-    onFreeCreationUploadFinished(freeCreationAliyunOssPath) {
-        console.log('onFreeCreationUploadFinished', freeCreationAliyunOssPath);
-        this.swalShareQrcode(freeCreationAliyunOssPath);
-    }
-    onHomeworkUploadFinished(homeworkAliyunOssPath) {
-        console.log('onHomeworkUploadFinished', homeworkAliyunOssPath);
-        this.setState({
-            'isFlyingbearsHomeworkSubmited': true
-        });
-        this.swalShareQrcode(homeworkAliyunOssPath);
-        this.createLessonSectionPass(homeworkAliyunOssPath);
+        return urlArgs['mode'];   // free-creation, new-homework, edit-homework
     }
     swalShareQrcode(aliyunOssPath) {
         const xhr = new XMLHttpRequest();
@@ -287,7 +271,17 @@ class MenuBar extends React.Component {
             "mimeType": "image/png"
         }));
     }
-    createLessonSectionPass(homeworkAliyunOssPath) {
+    onFreeCreationUploadFinished(freeCreationAliyunOssPath) {
+        console.log('onFreeCreationUploadFinished', freeCreationAliyunOssPath);
+        this.swalShareQrcode(freeCreationAliyunOssPath);
+    }
+    onNewHomeworkUploadFinished(newHomeworkAliyunOssPath) {
+        console.log('onNewHomeworkUploadFinished', newHomeworkAliyunOssPath);
+        this.setState({
+            'isFlyingbearsHomeworkSubmited': true
+        });
+        this.swalShareQrcode(newHomeworkAliyunOssPath);
+        
         const urlArgs = fn_url_args();
         const studentId = urlArgs['studentId'];
         const lessonStageId = urlArgs['lessonStageId'];
@@ -302,14 +296,39 @@ class MenuBar extends React.Component {
             }
         };
         xhr.send(JSON.stringify({
-            "apiName": "module_micro_api_scratch_flyingbears_cn_site.api.Homework_Submit_Api",
+            "apiName": "module_micro_api_scratch_flyingbears_cn_site.api.Homework_CreateNew_Api",
             "lessonStageId": lessonStageId,
             "lessonId": lessonId,
             "lessonSectionId": lessonSectionId,
             "studentId": studentId,
             "name": "作业名称",
             "desc": "作业的相关描述文字",
-            "aliyunOssPath": homeworkAliyunOssPath,
+            "aliyunOssPath": newHomeworkAliyunOssPath,
+        }));
+    }
+    onEditHomeworkUploadFinished(editHomeworkAliyunOssPath) {
+        console.log('onEditHomeworkUploadFinished', editHomeworkAliyunOssPath);
+        this.setState({
+            'isFlyingbearsHomeworkSubmited': true
+        });
+        this.swalShareQrcode(editHomeworkAliyunOssPath);
+        
+        const urlArgs = fn_url_args();
+        const id = urlArgs['id'];
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', 'http://scratch.flyingbears.cn:9701/api');
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState == 4) {
+                const response = JSON.parse(xhr.responseText);
+                console.log('flyingbearsSubmitHomework ' + response.code);
+            }
+        };
+        xhr.send(JSON.stringify({
+            "apiName": "module_micro_api_scratch_flyingbears_cn_site.api.Homework_Update_Api",
+            "id": id,
+            "name": "作业名称",
+            "desc": "作业的相关描述文字",
+            "aliyunOssPath": editHomeworkAliyunOssPath,
         }));
     }
     handleLanguageMouseUp (e) {
@@ -510,7 +529,7 @@ class MenuBar extends React.Component {
                             username={this.props.authorUsername}
                         />
                     ) : null)}
-                    {this.isFreeCreationMode() ?
+                    {this.getHomeworkMode() == 'free-creation' &&
                         <FlyingbearsFreeCreationUploader
                             onUploadFinished={this.onFreeCreationUploadFinished.bind(this)}
                         >
@@ -521,9 +540,10 @@ class MenuBar extends React.Component {
                                 />
                             )}
                         </FlyingbearsFreeCreationUploader>
-                        :
+                    }
+                    {this.getHomeworkMode() == 'new-homework' &&
                         <FlyingbearsHomeworkUploader
-                            onUploadFinished={this.onHomeworkUploadFinished.bind(this)}
+                            onUploadFinished={this.onNewHomeworkUploadFinished.bind(this)}
                         >
                             {(className, upload) => (
                                 <FlyingbearsSubmitHomeworkButton
@@ -532,6 +552,19 @@ class MenuBar extends React.Component {
                                     onClick={e => upload()}
                                 />
                             )}
+                        </FlyingbearsHomeworkUploader>
+                    }
+                    {this.getHomeworkMode() == 'edit-homework' &&
+                        <FlyingbearsHomeworkUploader
+                        onUploadFinished={this.onEditHomeworkUploadFinished.bind(this)}
+                        >
+                        {(className, upload) => (
+                            <FlyingbearsSubmitHomeworkButton
+                                className={styles.menuBarButton}
+                                isSubmited={this.state.isFlyingbearsHomeworkSubmited}
+                                onClick={e => upload()}
+                            />
+                        )}
                         </FlyingbearsHomeworkUploader>
                     }
                 </div>
