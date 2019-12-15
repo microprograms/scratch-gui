@@ -49,7 +49,8 @@ class FlyingbearsAutoLoad extends React.Component {
         const mode = urlArgs['mode'];   // free-creation, new-homework, edit-homework
         const aliyunOssPath = urlArgs['aliyunOssPath'];
         if (!aliyunOssPath) {
-            return;
+            // 访问编辑器首页，自动加载默认素材
+            window.location.replace('index.html?aliyunOssPath=free-creation%2F自由创作模板.sb3');
         }
 
         this.props.onLoadingStarted(this.props.loadingState);
