@@ -251,6 +251,12 @@ class MenuBar extends React.Component {
         return urlArgs['mode'];   // free-creation, new-homework, edit-homework
     }
     swalShareQrcode(aliyunOssPath) {
+        const urlArgs = fn_url_args();
+        const studentId = urlArgs['studentId'];
+        const lessonStageId = urlArgs['lessonStageId'];
+        const lessonId = urlArgs['lessonId'];
+        const lessonSectionId = urlArgs['lessonSectionId'];
+
         const xhr = new XMLHttpRequest();
         xhr.open('POST', 'http://scratch.flyingbears.cn:9701/api');
         xhr.onreadystatechange = () => {
@@ -263,7 +269,7 @@ class MenuBar extends React.Component {
         };
         xhr.send(JSON.stringify({
             "apiName": "module_micro_api_qrcode.api.CreateQrcodeAsDataUrl",
-            "text": "http://scratch.flyingbears.cn/editor/player.html?aliyunOssPath=" + aliyunOssPath,
+			"text": `http://scratch.flyingbears.cn/share?lessonStageId=${lessonStageId}&lessonId=${lessonId}&lessonSectionId=${lessonSectionId}&studentId=${studentId}`,
             "width": "600",
             "height": "600",
             "margin": "2",
