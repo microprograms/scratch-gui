@@ -284,25 +284,17 @@ class MenuBar extends React.Component {
     }
     onNewHomeworkUploadFinished(newHomeworkAliyunOssPath) {
         console.log('onNewHomeworkUploadFinished', newHomeworkAliyunOssPath);
+        const self = this
         this.setState({
             'isFlyingbearsHomeworkSubmited': true
-        });
-        this.swalShareQrcode(newHomeworkAliyunOssPath);
-        
+        })
         const urlArgs = fn_url_args();
         const studentId = urlArgs['studentId'];
         const lessonStageId = urlArgs['lessonStageId'];
         const lessonId = urlArgs['lessonId'];
         const lessonSectionId = urlArgs['lessonSectionId'];
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', 'http://scratch.flyingbears.cn:9701/api');
-        xhr.onreadystatechange = () => {
-            if (xhr.readyState == 4) {
-                const response = JSON.parse(xhr.responseText);
-                console.log('flyingbearsSubmitHomework ' + response.code);
-            }
-        };
-        xhr.send(JSON.stringify({
+        
+        public_api({
             "apiName": "module_micro_api_scratch_flyingbears_cn_site.api.Homework_Submit_Api",
             "lessonStageId": lessonStageId,
             "lessonId": lessonId,
@@ -311,7 +303,9 @@ class MenuBar extends React.Component {
             "name": "作业名称",
             "desc": "作业的相关描述文字",
             "aliyunOssPath": newHomeworkAliyunOssPath,
-        }));
+        }).then(resp => {
+            self.swalShareQrcode(newHomeworkAliyunOssPath)
+        })
     }
     onEditHomeworkUploadFinished(editHomeworkAliyunOssPath) {
         console.log('onEditHomeworkUploadFinished', editHomeworkAliyunOssPath);
