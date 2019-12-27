@@ -76,6 +76,7 @@ import fileManagerOpenIcon from './file-manager-open.svg';
 
 import swal from '@sweetalert/with-react'
 import {fn_url_args} from '../../lib/flyingbears-fn';
+import {public_api} from '../../fn/api';
 
 const ariaMessages = defineMessages({
     language: {
@@ -251,31 +252,31 @@ class MenuBar extends React.Component {
         return urlArgs['mode'];   // free-creation, new-homework, edit-homework
     }
     swalShareQrcode(aliyunOssPath) {
-        const urlArgs = fn_url_args();
-        const studentId = urlArgs['studentId'];
-        const lessonStageId = urlArgs['lessonStageId'];
-        const lessonId = urlArgs['lessonId'];
-        const lessonSectionId = urlArgs['lessonSectionId'];
+        const urlArgs = fn_url_args()
+        const studentId = urlArgs['studentId']
+        const lessonStageId = urlArgs['lessonStageId']
+        const lessonId = urlArgs['lessonId']
+        const lessonSectionId = urlArgs['lessonSectionId']
 
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', 'http://scratch.flyingbears.cn:9701/api');
-        xhr.onreadystatechange = () => {
-            if (xhr.readyState == 4) {
-                const response = JSON.parse(xhr.responseText);
-                if (response.code == 'success') {
-                    swal(<FlyingbearsShareQrcode qrcodeDataUrl={response.dataUrl} />);
-                }
-            }
-        };
-        xhr.send(JSON.stringify({
-            "apiName": "module_micro_api_qrcode.api.CreateQrcodeAsDataUrl",
-			"text": `http://scratch.flyingbears.cn/share?lessonStageId=${lessonStageId}&lessonId=${lessonId}&lessonSectionId=${lessonSectionId}&studentId=${studentId}`,
-            "width": "600",
-            "height": "600",
-            "margin": "2",
-            "format": "png",
-            "mimeType": "image/png"
-        }));
+        public_api({
+            "apiName": "Debug_QueryHomeworkShareConfig_Api",
+            "studentId": studentId,
+            "lessonStageId": lessonStageId,
+            "lessonId": lessonId,
+            "lessonSectionId": lessonSectionId,
+        }).then(resp => {
+			return api({
+				"apiName": "module_micro_api_qrcode.api.CreateQrcodeAsDataUrl",
+				"text": `http://scratch.flyingbears.cn/share?homeworkId=${resp.homeworkId}&title=${resp.title}`,
+				"width": "600",
+				"height": "600",
+				"margin": "2",
+				"format": "png",
+				"mimeType": "image/png",
+			})
+		}).then(resp => {
+            swal(<FlyingbearsShareQrcode qrcodeDataUrl={resp.dataUrl} />)
+		})
     }
     onFreeCreationUploadFinished(freeCreationAliyunOssPath) {
         console.log('onFreeCreationUploadFinished', freeCreationAliyunOssPath);
