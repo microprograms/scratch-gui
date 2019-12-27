@@ -22,6 +22,8 @@ import {
     doneFlyingbearsAutoLoad,
 } from '../../reducers/project-state';
 
+import storage from '../../lib/storage';
+
 class FlyingbearsAutoLoad extends React.Component {
     constructor (props) {
         super(props);
@@ -29,6 +31,9 @@ class FlyingbearsAutoLoad extends React.Component {
             'getProjectTitleFromFilename',
             'autoLoadLesson',
         ]);
+        storage.setProjectHost('https://projects.scratch.mit.edu');
+        storage.setAssetHost('https://assets.scratch.mit.edu');
+        storage.setTranslatorFunction(props.intl.formatMessage);
     }
 
     componentDidMount () {
