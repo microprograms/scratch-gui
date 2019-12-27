@@ -267,7 +267,7 @@ class MenuBar extends React.Component {
         }).then(resp => {
 			return public_api({
 				"apiName": "module_micro_api_qrcode.api.CreateQrcodeAsDataUrl",
-				"text": `http://scratch.flyingbears.cn/share?homeworkId=${resp.homeworkId}&title=${resp.title}`,
+				"text": `http://scratch.flyingbears.cn/html/share.html?homeworkId=${resp.homeworkId}&title=${resp.title}`,
 				"width": "600",
 				"height": "600",
 				"margin": "2",
