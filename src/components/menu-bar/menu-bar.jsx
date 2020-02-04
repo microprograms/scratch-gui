@@ -280,7 +280,9 @@ class MenuBar extends React.Component {
     }
     onFreeCreationUploadFinished(freeCreationAliyunOssPath) {
         console.log('onFreeCreationUploadFinished', freeCreationAliyunOssPath);
-        this.swalShareQrcode(freeCreationAliyunOssPath);
+        swal(<div>
+            <p>提交成功</p>
+        </div>);
     }
     onNewHomeworkUploadFinished(newHomeworkAliyunOssPath) {
         console.log('onNewHomeworkUploadFinished', newHomeworkAliyunOssPath);

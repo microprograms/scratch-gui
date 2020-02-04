@@ -49,9 +49,35 @@ class FlyingbearsAutoLoad extends React.Component {
         return matches[1].substring(0, 100); // truncate project title to max 100 chars
     }
 
-    autoLoadLesson () {
+    getAliyunOssFinalFilename (callback) {
         const urlArgs = fn_url_args();
         const mode = urlArgs['mode'];   // free-creation, new-homework, edit-homework
+        const aliyunOssPath = urlArgs['aliyunOssPath'];
+        const aliyunOssDownloadUrlPrefix = 'http://scratch.flyingbears.cn:9702/download?objectName=';
+        
+        if (mode == 'free-creation') {
+            // 自由创作
+            const studentId = urlArgs['studentId'];
+            const downloadUrl = aliyunOssDownloadUrlPrefix + 'free-creation/' + studentId  + '.sb3';
+            fetch(downloadUrl)
+            .then(resp => {
+                console.log('自由创作', downloadUrl);
+                callback(downloadUrl);
+            })
+            .catch(err => {
+                const defaultDownloadUrl = aliyunOssDownloadUrlPrefix + 'free-creation%2F自由创作模板.sb3';
+                console.log('自由创作', defaultDownloadUrl);
+                callback(defaultDownloadUrl);
+            })
+        } else {
+            const downloadUrl = aliyunOssDownloadUrlPrefix + aliyunOssPath;
+            console.log('作业', downloadUrl);
+            callback(downloadUrl);
+        }
+    }
+
+    autoLoadLesson () {
+        const urlArgs = fn_url_args();
         const aliyunOssPath = urlArgs['aliyunOssPath'];
         if (!aliyunOssPath) {
             // 访问编辑器首页，自动加载默认素材
@@ -59,40 +85,42 @@ class FlyingbearsAutoLoad extends React.Component {
         }
 
         this.props.onLoadingStarted(this.props.loadingState);
-
-        const aliyunOssDownloadUrlPrefix = 'http://scratch.flyingbears.cn:9702/download?objectName=';
-        const downloadUrl = aliyunOssDownloadUrlPrefix + aliyunOssPath;
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', downloadUrl);
-        xhr.responseType = 'blob';
-        xhr.onreadystatechange = () => {
-            if (xhr.readyState == 4) {
-                const blob = new Blob([xhr.response]);
-                const projectTitle = this.getProjectTitleFromFilename(aliyunOssPath.substring(aliyunOssPath.lastIndexOf('/') + 1));
-                const reader = new FileReader();
-                reader.readAsArrayBuffer(blob);
-                reader.onload = () => {
-                    this.props.vm.loadProject(reader.result)
-                        .then(() => {
-                            this.props.onLoadingFinished(this.props.loadingState, true);
-                            this.props.onReceivedProjectTitle(projectTitle);
-                        })
-                        .catch(error => {
-                            console.warn(error);
-                            const messages = defineMessages({
-                                loadError: {
-                                    id: 'gui.projectLoader.loadError',
-                                    defaultMessage: 'The project file that was selected failed to load.',
-                                    description: 'An error that displays when a local project file fails to load.'
-                                }
+        
+        this.getAliyunOssFinalFilename(downloadUrl => {
+            console.log('getAliyunOssFinalFilename', downloadUrl);
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', downloadUrl);
+            xhr.responseType = 'blob';
+            xhr.onreadystatechange = () => {
+                if (xhr.readyState == 4) {
+                    const blob = new Blob([xhr.response]);
+                    const projectTitle = this.getProjectTitleFromFilename(aliyunOssPath.substring(aliyunOssPath.lastIndexOf('/') + 1));
+                    const reader = new FileReader();
+                    reader.readAsArrayBuffer(blob);
+                    reader.onload = () => {
+                        this.props.vm.loadProject(reader.result)
+                            .then(() => {
+                                this.props.onLoadingFinished(this.props.loadingState, true);
+                                this.props.onReceivedProjectTitle(projectTitle);
+                            })
+                            .catch(error => {
+                                console.warn(error);
+                                const messages = defineMessages({
+                                    loadError: {
+                                        id: 'gui.projectLoader.loadError',
+                                        defaultMessage: 'The project file that was selected failed to load.',
+                                        description: 'An error that displays when a local project file fails to load.'
+                                    }
+                                });
+                                alert(this.props.intl.formatMessage(messages.loadError)); // eslint-disable-line no-alert
+                                this.props.onLoadingFinished(this.props.loadingState, false);
                             });
-                            alert(this.props.intl.formatMessage(messages.loadError)); // eslint-disable-line no-alert
-                            this.props.onLoadingFinished(this.props.loadingState, false);
-                        });
-                };
-            }
-        };
-        xhr.send();
+                    };
+                }
+            };
+            xhr.send();
+        });
+
     }
 
     render () {
